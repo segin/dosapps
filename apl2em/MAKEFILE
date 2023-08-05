@@ -1,0 +1,179 @@
+#****************************************************************************
+#
+#	Apple Emulator Make File
+#
+#****************************************************************************
+#
+#   Title:	Makefile
+#
+#   Group:	Emulator
+#
+#   Revision:	1.00
+#
+#   Date:	February 9, 1988
+#
+#   Author:	R W Spurlock
+#
+#******************************************************************************
+#
+#   Change log:
+#
+#     DATE    REVISION			DESCRIPTION
+#   --------  --------	-------------------------------------------------------
+#   02/09/88	1.00	Original
+#
+#******************************************************************************
+#
+#	Definitions for the assembler
+#
+AS	= masm
+AFLAGS	= /t /Zi /Zd
+AINC	=
+
+#
+#	Definitions for the linker
+#
+LD	= link
+LFLAGS	= /m /cparmaxalloc:1 /li
+
+#
+#	RULES - assumes MASM 5.00
+#
+.asm.obj:
+	$(AS) $(AFLAGS) $(AINC) $*;
+
+.obj.exe:
+	$(LD) $(LFLAGS) @$*.lnk
+
+#******************************************************************************
+#	PROGRAM module dependencies
+#******************************************************************************
+
+EMULATE.obj:	EMULATE.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+APPLE.obj:	APPLE.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+DEVICE.obj:	DEVICE.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+MEMORY.obj:	MEMORY.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+VIDEO.obj:	VIDEO.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+CGA.obj:	CGA.asm 		\
+		MACROS.inc		\
+		EQUATES.inc
+
+EGA.obj:	EGA.asm 		\
+		MACROS.inc		\
+		EQUATES.inc
+
+HARDWARE.obj:	HARDWARE.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+KEYBOARD.obj:	KEYBOARD.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+TIMER.obj:	TIMER.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+CASSETTE.obj:	CASSETTE.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+SPEAKER.obj:	SPEAKER.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+JOYSTICK.obj:	JOYSTICK.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+EMPTY.obj:	EMPTY.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+DISK.obj:	DISK.asm		\
+		MACROS.inc		\
+		EQUATES.inc		\
+		STRUCS.inc
+
+LANGUAGE.obj:	LANGUAGE.asm		\
+		MACROS.inc		\
+		EQUATES.inc		\
+		STRUCS.inc
+
+CARTRIGE.obj:	CARTRIGE.asm		\
+		MACROS.inc		\
+		EQUATES.inc		\
+		STRUCS.inc
+
+SERIAL.obj:	SERIAL.asm		\
+		MACROS.inc		\
+		EQUATES.inc		\
+		STRUCS.inc
+
+INT.obj:	INT.asm 		\
+		MACROS.inc		\
+		EQUATES.inc		\
+		STRUCS.inc
+
+DEBUG.obj:	DEBUG.asm		\
+		MACROS.inc		\
+		EQUATES.inc		\
+		STRUCS.inc
+
+PRINTF.obj:	PRINTF.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+TTY.obj:	TTY.asm 		\
+		MACROS.inc		\
+		EQUATES.inc
+
+WINDOW.obj:	WINDOW.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+DATA.obj:	DATA.asm		\
+		MACROS.inc		\
+		EQUATES.inc
+
+APPLE.exe:	EMULATE.obj		\
+		APPLE.obj		\
+		DEVICE.obj		\
+		MEMORY.obj		\
+		VIDEO.obj		\
+		CGA.obj 		\
+		EGA.obj 		\
+		HARDWARE.obj		\
+		KEYBOARD.obj		\
+		TIMER.obj		\
+		CASSETTE.obj		\
+		SPEAKER.obj		\
+		JOYSTICK.obj		\
+		EMPTY.obj		\
+		DISK.obj		\
+		LANGUAGE.obj		\
+		CARTRIGE.obj		\
+		SERIAL.obj		\
+		INT.obj 		\
+		DEBUG.obj		\
+		PRINTF.obj		\
+		TTY.obj 		\
+		WINDOW.obj		\
+		DATA.obj
+
+

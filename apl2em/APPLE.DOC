@@ -1,0 +1,63 @@
+
+		     Apple Emulator Documentation
+
+
+		This is the documentation for the IBM 286/386 Apple ][
+	emulator. The emulator is not quite complete but since it is a
+	"for fun" project I thought that I would go ahead and release
+	what I currently have. The following describes the stage of
+	completion for each of the Apple ][ emulator sections:
+
+		Video	      - The emulator will run on a CGA, EGA, or
+				VGA, however, it looks much better on an
+				EGA or VGA. All the Apple ][ video modes
+				are supported except mixed mode with 4
+				lines of text at the bottom of the graphics
+				screen. Low resolution and high resolution
+				graphics are supported.
+
+		Keyboard      - The keyboard functions as an Apple ][
+				keyboard except for the following keys:
+
+				PrtSc - Exit the Apple ][ Emulator
+			Scroll	Lock  - Change the screen update method
+			Num	Lock  - Toggle between keypad and joystick
+
+				Some programs run faster depending on the
+				video update method. Try toggling the scroll
+				lock to see if the program runs faster.
+
+		Joystick      - A joystick is emulated using the numeric
+				keypad. See the joystick.doc file for more
+				information on joystick modes, ajustments, etc.
+
+		Disk Drive    - Only Apple ][ floppy type drives are supported
+				now, I need more information on how a Apple
+				hard disk works. The floppies are emulated by
+				have PC disk files named DISKxy.DSK, where:
+
+				x - Is the slot number of the disk controller
+
+				y - Is the drive number, a or b
+
+				For example, if you had a disk controller in
+				slot 6, the default the file DISK6A.DSK would
+				be the Apple ][ disk image.
+
+		Langauge Card - A 32k langauge card is supported and can be
+				accessed via standard langauge card methods.
+
+		Serial Card   - Sorry but there is no serial support yet, again
+				I need more information about the Apple ][
+				serial port.
+
+
+		Well there is really a lot more to this but since I'm giving
+	out the source you can look at it for yourself. I plan on adding a lot
+	of other features but I'm not sure when I will get around to them.
+	Until then I hope you enjoy what I have done so far, thanks again.
+
+
+							Randy Spurlock
+
+

@@ -1,0 +1,58 @@
+
+		     Apple Emulator Joystick Documentation
+
+
+
+	Keystroke			Description
+	---------		-------------------------
+
+
+	NumLock 		Toggle between keyboard and joystick mode
+
+	Shift+NumLock		Toggle joystick between analog/binary type
+
+	Ctrl+NumLock		Toggle between normal/flight mode
+
+	Alt+NumLock		Toggle between normal/self-center mode
+
+	Ctrl+Alt+NumLock	Toggle between normal/fast response mode
+
+	Ctrl+Alt+Shift+NumLock	Reset joystick to default (Binary normal)
+
+	Alt+Ins 		Increase X axis center position (Medium inc.)
+
+	Alt+Del 		Decrease X axis center position (Medium dec.)
+
+	Alt+Shift+Ins		Increase X axis center position (Small inc.)
+
+	Alt+Shift+Del		Decrease X axis center position (Small dec.)
+
+	Ctrl+Ins		Increase X axis resolution (Medium increment)
+
+	Ctrl+Del		Decrease X axis resolution (Medium decrement)
+
+	Ctrl+Shift+Ins		Increase X axis resolution (Small increment)
+
+	Ctrl+Shift+Del		Decrease X axis resolution (Small decrement)
+
+	Alt+Pad_Plus		Increase Y axis center position (Medium inc.)
+
+	Alt+Pad_Minus		Decrease Y axis center position (Medium dec.)
+
+	Alt+Shift+Pad_Plus	Increase Y axis center position (Small inc.)
+
+	Alt+Shift+Pad_Minus	Decrease Y axis center position (Small dec.)
+
+	Ctrl+Pad_Plus		Increase Y axis resolution (Medium increment)
+
+	Ctrl+Pad_Minus		Decrease Y axis resolution (Medium decrement)
+
+	Ctrl+Shift+Pad_Plus	Increase Y axis resolution (Small increment)
+
+	Ctrl+Shift+Pad_Minus	Decrease Y axis resolution (Small decrement)
+
+	Tab			Fire button 1
+
+	Alt			Fire button 2
+
+
