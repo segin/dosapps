@@ -1,0 +1,174 @@
+
+WHAT YOU GET
+
+     The .ARC file you got should contain the following files:
+
+     This USER.NOT file
+     GIFSLOW.PAS
+     GIFEGA.PAS
+     NLZW.ASM
+     READRAST.ASM
+     SCROLL.ASM
+     SCRSAVE.ASM
+     GIFSLOW.EXE
+     GIFEGA.EXE
+
+     These make up the source and executable for two GIF reader/displayers
+written in Turbo Pascal 4.0 and MASM compatible assembly language. GIFSLOW
+is written entirely in Turbo to lay out the techniques being used in a form
+more accessible than assembly language, and boy, does it live up to its
+name -- you can go have a short beer while the program is decoding and
+displaying a single picture. GIFEGA is much faster -- it takes about 15-30
+seconds to display a picture depending on its complexity -- and adds a
+directory display, scrolling, and a file save feature. The guts of GIFEGA
+are in assembly-language external files, which I've tuned to make it as
+fast as I can manage. The principal reason for putting up these amateur
+works is to provide source code for LZW decompression, which seems to be a
+stumbling block for many who'd otherwise be writing their own GIF readers.
+     Using the program is pretty straightforward. With GIFSLOW all you do
+is type in the filename at the prompt. If you get tired of waiting for the
+picture to fully display, hitting ESC will get you out of it. GIFEGA is a
+little more sophisticated. The program will display a list of eligible
+files (files with the extension '.GIF') in the current directory. You're
+then prompted for a filename. Just hitting ENTER at this point gets you out
+of the program. Type in a single '\' character and the program will prompt
+you for a new path name, then switch to that new path and display a new
+list of files. Type in the filename you'd like to see displayed (you don't
+have to add the .GIF extension), and the program will display it. When the
+display is done, the computer will beep. If the picture is larger
+vertically than the screen, you can then scroll it by using the Up and Down
+Arrows and the Home and End keys. The Up and Down arrow keys move the
+picture in increments of ten scan lines at a time. The Home key moves to
+the top of the picture, and the End key moves to the bottom. Hitting ESC
+gets you out of the display and produces a prompt asking you to hit the
+space bar if you want to save the file as an EGA Paint compatible .SCR
+file. Hit the space bar and you'll save the file with the same pathname and
+filename but the extension .SCR. That's all there is to it.
+
+HOW THE PROGRAM WORKS
+
+     While the operation of the program is pretty fully explained in the
+comments, a brief sketch of its operation and a few notes on the techniques
+used are probably useful. The program starts by getting and sorting the
+directory list, displaying it, and then getting the filename from the user.
+The file is then read in, and it's worth spending a few moments on how we
+do this.
+     Since a GIF file has a header of no fixed length, the obvious way to
+treat it is as a file of byte. The problem is that reading long files a
+byte at a time in Turbo is a very slow process; if we cheat the compiler a
+bit by claiming that the file is really a single large data structure, and
+try to read it all in one fell swoop, we can speed matters up enormously.
+     This is what both programs do. The file is declared as a RasterArray,
+a one-dimensioned array of 64,000 bytes, which is maintained on the heap.
+We try to read this big data structure from the file. This demands that we
+turn off I/O checking during the read (otherwise if the file is smaller
+than 64,000 bytes an error will occur) and call IORESULT after the read (or
+else Turbo will refuse to do any more I/O). If the file is larger than
+64,000 bytes, this will be detected and dealt with later.
+     Now we have the whole file, or most of it, in memory, and we have to
+read the header. This is done by the functions GetByte and GetWord, which
+mimic a file read of a single byte or of a word. We read the necessary
+variables described in the GIF spec from the file, and compute some more
+based on those. As described in 'Problems and Limitations' below we don't
+cope with absolutely every possibility outlined in the GIF spec, but I've
+yet to have the program fail on this account (although making the program
+conform completely to the spec is one obvious enhancement). We also read
+and set up the color palette. At this point, if it's a 256-color picture,
+we do an extremely crude fix to make the picture display in 16 colors with
+(hopefully) some remote resemblance to the original. This is done by
+arbitrarily declaring the first 16 colors in the palette to be the EGA
+palette, then resetting the color values above 16 to their nearest
+equivalents below 16. This could be improved on, and I'm open to
+suggestions as to how.
+     Once we have the necessary variables and constants all set up, we're
+ready to start decompressing. The first step in this is to unblock the
+whole data stream -- that is, to turn the data stream from a series of 255-
+byte or less blocks into one long stream of data. This may seem to be an
+unnecessary step; a lot of GIF readers seem to unblock the data stream as
+they go, but if we do that then each and every time we read a code we have
+to check to see if we're near the end of the current block, and if so, move
+the tail end of that block up to the front of the read buffer, unblock and
+add on the next block, and recompute BITOFFSET to point back to the start
+of the buffer. This makes for an awful lot of checking and computation
+repeated God knows how many times. Unblocking the data stream beforehand
+makes the READCODE routine much simpler, whether in high level or in
+assembly, and faster as well. (And why Compuserve decided to block the durn
+thing beats me: tradition?)
+     During unblocking we also cope with files larger than 64,000 bytes.
+The logic of this is simple enough: if we run out of GIFSTUFF during
+unblocking, we allocate memory for another RASTER array, do another read
+from the file, and put the rest of the data stream into this second RASTER
+array. During decoding, if this second array exists, we check to see if
+we're near the end of the first one. If so, we move the end of the first
+one up to the front of it, copy the contents of the second RASTER array
+into the first, reset BITOFFSET back to the start of the array, and keep
+on. This is just what other readers do on a block-by-block basis, but done
+on a larger scale, and only once. You can see this happen on a file bigger
+than 64,000 bytes: there'll be a 'hiccup' when the arrays are readjusted.
+This is faster than waiting and doing a second file read during the actual
+decompress/display, but as a consequence the program uses a lot of memory:
+as much as 192K over and above the size of the program at peak.
+     Once we have our data stream unblocked we can unravel the LZW
+decompression. This, frankly, I don't understand too well, but what comes
+out of the decompression cycle are pixels ready to write to the EGA screen.
+GIFSLOW does this a pixel at a time using a BIOS call; GIFEGA does this a
+scan line at a time, writing directly to EGA memory. We take advantage of
+the fact that the EGA's memory will hold a 640x480 picture (even if the
+card will only display 640x350) to get the whole picture into EGA memory,
+so that when we're done we can grab the four bit planes and save them in
+new heap arrays. We can then use those heap arrays to scroll the picture or
+save it as an EGA Paint-compatible .SCR file (which consists of the header
+followed by the four bit planes in order 0,2,1,3). Scrolling is done only
+if the picture is larger than the screen, and is done by using Write Mode 0
+to move the bitplanes from the heap arrays back into the EGA memory,
+starting at an an offset into the bitplane arrays determined by the Turbo
+variable ROLL. Originally the scrolling routine moved the bitplanes one at
+a time and all at a time, but this led to a 'rainbow' effect with some
+pictures (you could see the bitplanes being moved) and the routine was
+changed to move a scan line from each bitplane at a time, which got rid of
+the problem but allows you to see the scroll in action as the picture
+ripples down the screen. This could doubtless be improved.
+
+LIMITATIONS AND KNOWN PROBLEMS
+
+     The program deviates somewhat from the letter of the GIF spec, as
+follows:
+     No provision is made for a default colormap if a global one is not
+supplied.
+     No provision is made for dealing with a local colormap.
+     No provision is made for dealing with GIF enhancements, nor with
+multiple images in the same file.
+     While all these are deviations from the strict spec, I've yet to have
+the program fail on that account.
+     The program doesn't cope well with 256-color images. This is doubtless
+fixable (and one obvious area for improvement) but I haven't spent much
+time on it.
+     No provision is made in the program for modes other than vanilla EGA
+(640x350x16). One consequence of this is that though the save routine can
+write .SCP (640x480) files as well as .SCR files, this feature is
+permanently turned off in the program as it stands. This can be fixed, if
+you have an EGA that will handle more resolution, by changing the typed
+constant EGAHeight to 480.
+     The program doesn't work with GRABEGA; the files produced seem to have
+the wrong palette setting. Since GRABEGA works with other GIF readers the
+bug would seem to be in GIFEGA, but I don't know where, and since the
+program incorporates a .SCR save routine I'm not looking too hard.
+
+     Some obvious areas of enhancement would include: more comprehensive
+error checking and recovery (at present the program will lock up or
+otherwise die if there's an error in the GIF data stream; detecting these
+is tough), printing, a sexier directory display with moving highlights,
+more save file formats, etc. More professional programmers would doubtless
+like more modularity and structure, less reliance on globals, and so on, in
+the code; anyone is welcome to dive in and improve the program any way he
+or she can.
+
+     I hope you enjoy the program; I had fun writing it, and I hope you
+have fun with it. The code is placed in the public domain, since it's based
+on the work of others who were generous enough to place their code in the
+public domain; chief among these is Tom Pfau of DEC, who wrote the public
+domain file unsqueezer LZDCMP, on which this program is based. While I've
+claimed no copyright and you can do what you like with the code, it's
+intended for the use of individuals for their own enjoyment, and I ask that
+you don't use it in any program transferred for a fee.
+
